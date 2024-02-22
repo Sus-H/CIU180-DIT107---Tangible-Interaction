@@ -14,6 +14,7 @@
 #define BUZZER_PIN 8 // BUZZER pin
 #define SPEAKER_PIN 6 // SPEAKER pin
 #define KNOB_PIN A0 // KNOB pin
+#define KNOB_TINY_PIN A1 // KNOB tiny pin
 // ULTRASENSOR pins
 const int trigPin = 9;
 const int echoPin = 10;
@@ -22,6 +23,7 @@ int duration = 0;
 float distance = 0;
 
 int knobValue = 0;
+int tinyKnob = 0;
 
 void setup() {
   // ULTRASENSOR
@@ -51,12 +53,13 @@ void loop() {
   distance = (duration * .0343) / 2;
   
   // prints the distance from the ultrasensor
-  Serial.print("distance ");
-  Serial.println(distance);
-  delay(100);
+  // Serial.print("distance ");
+  // Serial.println(distance);
+  // delay(100);
 
   // Reading the knob value
   knobValue = analogRead(KNOB_PIN);
+  tinyKnob = analogRead(KNOB_TINY_PIN);
   Serial.print("knob value ");
   Serial.println(knobValue);
 
@@ -66,20 +69,37 @@ void loop() {
     // Turn on the LED to help indicate that it works
     digitalWrite(LED_B_PIN, HIGH); 
     // Play a tone
-    tone(SPEAKER_PIN, NOTE_G3);
+    // tone(SPEAKER_PIN, NOTE_G3);
+    Serial.println("tone1");
+
   }
   else if (knobValue > 300 && knobValue < 700) {
     // Blink with the light
     digitalWrite(LED_B_PIN, HIGH); 
-    delay(100);
     digitalWrite(LED_B_PIN, LOW);
     // Turn off the sound
-    noTone(SPEAKER_PIN);
+    // noTone(SPEAKER_PIN);
+    Serial.println("tone2");
+
   }
   else {
     // Turn of the light and sound
     digitalWrite(LED_B_PIN, LOW); 
-    noTone(SPEAKER_PIN);
+    // noTone(SPEAKER_PIN);
+    Serial.println("noTone");
+
+  }
+
+
+  // For the TINY knob, do something
+  if (tinyKnob > 700) {
+
+  }
+  else if (tinyKnob > 300 && tinyKnob < 700) {
+
+  }
+  else {
+
   }
 
   // ultrasensor, do something
@@ -89,15 +109,19 @@ void loop() {
     digitalWrite(LED_R_PIN, HIGH); 
 
     // turns of the buzzer for now
-    tone(BUZZER_PIN, 50); 
+    // tone(BUZZER_PIN, 50);
+
+  }
+  else if (distance < 10) {
+
   }
   // otherwise do nothing
   else {
     // Turn off the LED
     digitalWrite(LED_R_PIN, LOW); 
-    
+    // Serial.println("noTone");
     // turns off the buzzer
-    noTone(BUZZER_PIN); 
+    // noTone(BUZZER_PIN); 
   }
-  //delay(500);
+  delay(100);
 }
