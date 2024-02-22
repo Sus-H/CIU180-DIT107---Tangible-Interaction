@@ -1,7 +1,13 @@
 import serial
-from playsound import playsound
 from pathlib import Path
 import serial.tools.list_ports
+import scamp
+
+s = scamp.Session()
+s = scamp.Session.run_as_server(self=s)
+# s.timing_policy = 0.7
+piano = s.new_part("piano")
+# piano.play_note(65, 0.8, 1)
 
 ports = list(serial.tools.list_ports.comports())
 for p in ports:
@@ -24,13 +30,16 @@ def readserial(comport, baudrate):
             print(data)
     
         if data == "tone1":
-            audio = current_path + "\sneeze.wav"
-            playsound(audio)
+            piano.play_note(60, 0.8, 1)
+            continue
         elif data == "tone2":
-            audio = current_path + "\pianofail.wav"
-            playsound(audio)
+            piano.play_note(66, 0.8, 1)
+            continue
         elif data == "noTone":
+            # print(data)
             print("Silence...")
+            continue
 
 
 fromSerial = readserial(port, 9600)
+
