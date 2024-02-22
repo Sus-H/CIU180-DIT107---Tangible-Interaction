@@ -1,4 +1,6 @@
 import serial
+from playsound import playsound
+playsound('audio.mp3')
 
 
 def readserial(comport, baudrate):
