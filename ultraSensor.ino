@@ -2,7 +2,7 @@
   Use an ultrasensor to read distance.
   Then depending on the distance, lighting a lamp and making a buzzer sound.
 */
-// Tone library?
+// Tone library
 #include <Arduino.h>
 #define TONE_USE_INT
 #define TONE_PITCH 440
