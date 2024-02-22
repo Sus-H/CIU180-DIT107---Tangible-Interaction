@@ -1,11 +1,6 @@
 import serial
 from playsound import playsound
-import time
-import wave
 from pathlib import Path
-# import multiprocessing
-
-
 
 def readserial(comport, baudrate):
 
@@ -26,14 +21,4 @@ def readserial(comport, baudrate):
             playsound(audio)
             
 
-
-
 fromSerial = readserial("COM11", 9600)
-
-
-
-
-
-
-
-
