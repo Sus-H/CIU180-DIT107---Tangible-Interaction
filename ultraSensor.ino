@@ -8,7 +8,7 @@
 #define TONE_PITCH 440
 #include <TonePitch.h>
 
-
+// just adding a comment
 #define LED_R_PIN 13 // red LED pin
 #define LED_B_PIN 12 // blue LED pin
 #define BUZZER_PIN 8 // BUZZER pin
