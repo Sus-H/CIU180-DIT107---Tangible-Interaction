@@ -1,6 +1,7 @@
 import serial
 from playsound import playsound
-playsound('audio.mp3')
+import multiprocessing
+
 
 
 def readserial(comport, baudrate):
@@ -9,12 +10,22 @@ def readserial(comport, baudrate):
 
     while True:
         data = ser.readline().decode().strip()
-        if data:
-            print(data)
+        # if data:
+        #     print(data)
+    
+        if data == "Hello":
+            p = multiprocessing.Process(target=playsound, args=("sneeze.wav",))
+            p.start()
+            input("press ENTER to stop playback")
+            p.terminate()
 
 
-# if __name__ == '__main__':
+fromSerial = readserial("COM5", 9600)
 
-#     readserial('COM5', 9600)
 
-print(readserial('COM5', 9600))
+
+
+
+
+
+
