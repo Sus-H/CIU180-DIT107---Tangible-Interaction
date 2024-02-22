@@ -1,12 +1,21 @@
 import serial
 from playsound import playsound
 from pathlib import Path
+import serial.tools.list_ports
+
+ports = list(serial.tools.list_ports.comports())
+for p in ports:
+    # print(p.name)
+
+    if "Serial Device" in p.description:
+        print("This is an Arduino!")
+        port = p.name
+        print(port)
 
 def readserial(comport, baudrate):
 
     ser = serial.Serial(comport, baudrate, timeout=0.1)         # 1/timeout is the frequency at which the port is read
     current_path = str(Path().cwd())
-    # print(current_path)
 
     while True:
         data = ser.readline().decode().strip()
@@ -23,9 +32,5 @@ def readserial(comport, baudrate):
         elif data == "noTone":
             print("Silence...")
 
-            
 
-fromSerial = readserial("COM11", 9600)
-
-# audio = str(Path().cwd()) + "\sneeze.wav"
-# playsound(audio)
+fromSerial = readserial(port, 9600)
