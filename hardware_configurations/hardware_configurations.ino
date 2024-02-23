@@ -95,7 +95,7 @@ int play_tone() {
   if (distance > 35) {
     return 0;
   }
-  return map(distance, 0, 35, 60, 66);
+  return map(distance, 0, 35, 58, 68);
 }
 
 // POTENTIOMETERS Values 0-1023
