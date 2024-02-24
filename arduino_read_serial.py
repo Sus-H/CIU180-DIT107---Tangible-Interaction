@@ -4,6 +4,7 @@ import serial.tools.list_ports
 from scamp import Session
 from random import randint, choice
 import mido
+import fluidsynth
 # http://scamp.marcevanstein.com/narrative/tutorial_videos.html
 
 # from pathlib import Path
@@ -70,7 +71,7 @@ for i in list_of_drums:
 # pprint(s.instruments[0:-1:2])
 actual_instruments = main_session.instruments[0:-1:2]
 tones_midi = [60, 62, 64, 65, 67, 69, 71, 72]
-TESTING = True
+TESTING = False
 if TESTING is True:
     for picked_instr in actual_instruments:
         for tone in tones_midi:
@@ -93,7 +94,7 @@ if TESTING is not True:
                                                  0,
                                                  1/32,
                                                  2,
-                                                 randint(0, 0)]
+                                                 randint(1, 1)]
             print(data_converted)
 
             play_tone = data_converted[0]
@@ -111,4 +112,4 @@ if TESTING is not True:
                             blocking=False)
 
             if touchpad:
-                drum_session.fork(play_drums)
+                drum_session.fork(play_drums(drum))
