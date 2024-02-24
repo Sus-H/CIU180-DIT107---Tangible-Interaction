@@ -3,7 +3,7 @@ import serial
 import serial.tools.list_ports
 from scamp import Session
 from random import randint, choice
-
+import mido
 # http://scamp.marcevanstein.com/narrative/tutorial_videos.html
 
 # from pathlib import Path
@@ -11,7 +11,7 @@ from random import randint, choice
 
 # Get information from arduinos serial port.
 # 1/timeout is the frequency at which the port is read
-def read_serial(comport, baudrate) -> serial:
+def read_serial(comport, baudrate):
     ''' Connects to Arduino '''
 
     return serial.Serial(comport, baudrate, timeout=0.1)
@@ -20,6 +20,8 @@ def read_serial(comport, baudrate) -> serial:
 def play_drums(drum_picked=3, drum_pitch=60) -> None:
     '''plays the drums lmao'''
     drum_session.instruments[drum_picked].play_note(drum_pitch, 0.1, 1/2)
+
+
 
 
 # Automatically get the correct port
@@ -32,6 +34,8 @@ for p in ports:
         print(port)
 
 list_of_instr = ["Piano Merlin",
+                 "Glockenspiel",
+                 "Ice Rain",
                  "Shamisen",
                  "Banjo",
                  "shakuhachi",
@@ -42,12 +46,17 @@ list_of_instr = ["Piano Merlin",
                  "TR 808",
                  "clean guitar",
                  "Distortion Guitar",
-                 "acoustic bass"]
+                 "acoustic bass",]
 
 list_of_drums = ["Steel Drum",
                  "Taiko Drum",
                  "Synth Drum"]
 
+mid = mido.MidiFile('grotesco.mid')
+grotescolist = []
+for i in mid.play():
+    print(i)
+# print(grotescolist)
 
 # Create a new "Music session" use run as server to suppress the error messages
 main_session = Session()
@@ -66,7 +75,7 @@ if TESTING is True:
     for picked_instr in actual_instruments:
         for tone in tones_midi:
             drum_session.fork(play_drums)
-            picked_instr.play_note(tone, 0.1, 1/4)  # parent sesh
+            picked_instr.play_note(tone, 0.3, 1/4)  # parent sesh
 
 # Use function to get information from arduinos serial port.
 if TESTING is not True:
