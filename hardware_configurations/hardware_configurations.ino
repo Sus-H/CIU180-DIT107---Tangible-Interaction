@@ -107,7 +107,7 @@ float volume() {
 
 int instrument() {
   knob_0_value = analogRead(KNOB_0_PIN);
-  return map(knob_0_value, 0, 1023, 1, 5);
+  return map(knob_0_value, 0, 1023, 1, 11);
 }
 
 
