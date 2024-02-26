@@ -119,7 +119,7 @@ int durations() {
 
 int drum_sound() {
   knob_2_value = analogRead(KNOB_2_PIN);
-  return map(knob_2_value, 0, 1023, 1, 3);
+  return map(knob_2_value, 0, 1023, 0, 2);
 }
 
 
