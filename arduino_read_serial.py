@@ -53,10 +53,10 @@ list_of_drums = ["Steel Drum",
                  "Taiko Drum",
                  "Synth Drum"]
 
-mid = mido.MidiFile('grotesco.mid')
-grotescolist = []
-for i in mid.play():
-    print(i)
+# mid = mido.MidiFile('grotesco.mid')
+# grotescolist = []
+# for i in mid.play():
+#     print(i)
 # print(grotescolist)
 
 # Create a new "Music session" use run as server to suppress the error messages
@@ -71,7 +71,7 @@ for i in list_of_drums:
 # pprint(s.instruments[0:-1:2])
 actual_instruments = main_session.instruments[0:-1:2]
 tones_midi = [60, 62, 64, 65, 67, 69, 71, 72]
-TESTING = False
+TESTING = True
 if TESTING is True:
     for picked_instr in actual_instruments:
         for tone in tones_midi:
@@ -112,4 +112,4 @@ if TESTING is not True:
                             blocking=False)
 
             if touchpad:
-                drum_session.fork(play_drums(drum))
+                drum_session.fork(play_drums)
