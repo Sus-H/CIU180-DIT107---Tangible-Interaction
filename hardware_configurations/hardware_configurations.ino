@@ -99,7 +99,7 @@ int play_tone() {
 }
 
 // POTENTIOMETERS Values 0-1023
-float volume() {
+int volume() {
   slider_5_value = analogRead(SLIDER_5_PIN);
   return map(slider_5_value, 0, 1023, 0, 100);
 }
@@ -113,7 +113,7 @@ int instrument() {
 
 int durations() {
   knob_1_value = analogRead(KNOB_1_PIN);
-  return map(knob_1_value, 0, 1023, 1, 5);
+  return map(knob_1_value, 0, 1023, 1, 64);
 }
 
 
@@ -123,7 +123,7 @@ int drum_sound() {
 }
 
 
-int touchpad() {
+bool touchpad() {
   return digitalRead(TOUCH_PIN);
 }
 

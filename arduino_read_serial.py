@@ -74,12 +74,13 @@ if TESTING is True:
 if TESTING is not True:
     ser = read_serial(port, 9600)
     main_session = Session.run_as_server(self=main_session)
+    durations = 1/2
     while True:
         data = ser.readline().decode().strip()
         # data = "this is incoming data"
         # main_session.fast_forward(0)
         if data:
-            data_converted = str(data).split()
+            data_converted = str(data).split(" ")
             data_converted = [int(i) for i in data_converted]
             # data_converted: list[int | float] = [choice([60, 64, 67]),
             #                                      10,
@@ -94,6 +95,7 @@ if TESTING is not True:
             instr = actual_instruments[data_converted[2]]
             print(list_of_instr[data_converted[2]])
             durations = data_converted[3]
+            print(durations/64)
             drum = drum_session.instruments[data_converted[4]]
             touchpad = data_converted[5]
 
@@ -101,7 +103,7 @@ if TESTING is not True:
                 volume = 0
             instr.play_note(pitch=play_tone,
                             volume=volume/100,
-                            length=durations,
+                            length=durations/64,
                             blocking=False)
 
             if touchpad:
