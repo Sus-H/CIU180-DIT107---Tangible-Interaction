@@ -1,6 +1,4 @@
 {
     "port": "COM10",
-    "board": "arduino:avr:uno",
-    "programmer": "arduinoisp",
-    "sketch": "hardware_configurations\\hardware_configurations.ino"
+    "board": "arduino:avr:uno"
 }

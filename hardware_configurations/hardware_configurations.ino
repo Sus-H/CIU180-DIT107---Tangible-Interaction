@@ -23,8 +23,8 @@
 #define SLIDER_5_PIN A5 // SLIDER pin
 
 // ULTRASENSOR pins
-const int trigPin = 5;
-const int echoPin = 6;
+const int echoPin = 10;
+const int trigPin = 11;
 
 int duration = 0;
 float distance = 0;
