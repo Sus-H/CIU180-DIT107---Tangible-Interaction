@@ -1,4 +1,5 @@
 {
-    "port": "COM10",
-    "board": "arduino:avr:uno"
+    "port": "COM11",
+    "board": "arduino:avr:uno",
+    "sketch": "pressure_sensor_test.ino"
 }
