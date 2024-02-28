@@ -1,109 +1,130 @@
-// https://raw.githubusercontent.com/supercollider-quarks/Arduino/master/Arduino.scd
-/*
-See sc3_serial.ino -- script to upload to Arduino
-	// SuperCollider Tutorial: 19. Arduino -- https://youtu.be/_NpivsEva5o
+// This is without SMS library
+// It's the Eli's tutorial
+// https://github.com/elifieldsteel/SuperCollider-Tutorials/blob/master/full%20video%20scripts/19_script.scd
+// https://youtu.be/_NpivsEva5o?si=sCme4WUqVXArHrYz&t=772
 
-	int value;
+Quarks.gui;
 
-	void setup() {
-	// put your setup code here, to run once:
-	Serial.begin(115200);
-	}
+SerialPort.listDevices
+~port = SerialPort.new("COM6", 115200, crtscts:true);
+~port.read;
+~port.close;
 
-	void loop() {
-	// put your main code here, to run repeatedly:
-	value = analogRead(0);
-	Serial.println(value);
-	delay(1);
-	}
-*/
-// =====================================================================
-// Arduino
-//
-// This class encapsulates communication with an Arduino I/O
-// board. Subclasses handle the details of a specific serial protocol.
-//
-// When a message arrives (according to the protocol), the 'action'
-// instance variable is invoked, with the expanded message contents.
-//
-// Messages are sent to the board with the 'send' method. it takes any
-// number of arguments, the meaning of which again are again protocol
-// specific.
-
-// =====================================================================
-// SimpleMessageSystem_example_1 (from the SMS distribution)
-// see http://www.arduino.cc/playground/Code/SimpleMessageSystem
-
-SerialPort.devices;
-
-p = ArduinoSMS("COM6", 115200); // was 9600
-p.action = { |... msg| msg.postln };
-
-// read digital inputs
-p.send($r, $d);
-
-// read analog inputs
-p.send($r, $a);
-
-// write digital input 13
-p.send($w, $d, 13, 1);
-p.send($w, $d, 13, 0);
-
-// flash LED on digital pin 13
+~serial_monitor = [ ];
+//read 10bit serial data sent from Arduino's Serial.println
 (
-fork {
-	8.do {
-		p.send($w, $d, 13, 1);
-		1.25.wait;
-		p.send($w, $d, 13, 0);
-		0.25.wait;
-	}
-}
+r = Routine({
+    var byte, str, res;
+    99999.do{|i|
+		    str = "";
+		    // Read characters from the serial port until a newline character (ASCII 13) is encountered
+            while({byte = ~port.read; byte !=13 }, {
+                str= str++byte.asAscii;
+            });
+            res= str.asInteger;
+            ("read value:"+res).postln;
+    };
+}).play;
+)
+r.stop
+
+(
+// Create a routine to continuously read from the serial port
+~r = Routine({
+    var byte, str = "", res;
+    inf.do {
+        // Read characters from the serial port until a newline character (ASCII 13) is encountered
+        while({ byte = ~port.read; byte != 13 }, {
+            str = str ++ byte.asAscii; // Append each character to the string
+        });
+
+        // Remove leading and trailing whitespace
+        str = str.trim;
+		("string:"+str).postln
+        // Check if the string starts and ends with square brackets
+        if (str.startsWith("[") && str.endsWith("]")) {
+            // Remove the brackets
+            str = str.copyRange(1, str.size - 2);
+
+            // Split the string by spaces and parse as integers
+            res = str.split(" ").collect(_.asInteger);
+
+            // Post the read values
+			("read value:"+res).postln
+        }
+    };
+});
 )
 
-// write analog output 0
-p.send($w, $a, 0, 128);
+// Start the routine
+~r.play;
 
-// close port
-p.close;
+// Stop the routine when finished
+// ~r.stop;
 
-// =====================================================================
-// SimpleMessageSystem_analog_read
 
-p = ArduinoSMS("/dev/tty.usbserial-A1000ecP", 115200);
-p.action = { |... msg| msg.postln };
-
-// thor reading loop
 (
-fork {
-	100.do {
-		p.send($r, $a);
-		0.1.wait;
-	}
-}
+~serial_monitor = [ ];
+15.do{~serial_monitor = ~serial_monitor.add(~port.read)};
+~serial_monitor = ~serial_monitor.collect(_.asAscii);
 )
 
-p.close;
+~serial_monitor.collect(_.class);
 
-/// There is also ArduinoTSV for tab-separated values
-// e.g. in Arduino code:
-/*
-	Serial.print(millis() - start);        // check on performance in milliseconds
-    Serial.print("\t");                    // tab character for debug windown spacing
-    Serial.print(total[0]);                  // print sensor output 1
-    Serial.print("\t");
-    Serial.print(total[1]);                  // print sensor output 2
-    Serial.print("\t");
-    Serial.print(total[2]);                // print sensor output 3
-    Serial.print("\t");
-    Serial.println(total[3]);
-*/
 
-SerialPort.devices;
-a = ArduinoTSV.new( "/dev/ttyACM0", 9600 );
-a.action = { |... msg| msg.postln };
+(
+~charArray = [];
+~getValues = Routine.new({
+	var ascii;
+	{
+		ascii = ~port.read.asAscii;
+		if(ascii.isDecDigit, {~charArray = ~charArray.add(ascii)});
+		if(ascii == $H, {
+			~val = ~charArray.collect(_.digit).convertDigits;
+			~charArray = [];
 
-a.close;
+		});
+	}.loop;
+}).play
+)
 
-// EOF
-<
+(
+r = Routine({
+    inf.do{|i|
+        ~port.put(i.fold(0, 100).linexp(0, 100, 1, 255).asInteger.postln);
+        0.9.wait;
+    };
+}).play;
+)
+
+r.stop;
+s.boot;  // start sound synthesis engine
+
+(
+SynthDef.new(\saw, {
+	arg cutoff=1000;
+	var sig;
+	sig = Saw.ar([50,51]);
+	sig = RLPF.ar(sig, cutoff.lag(0.02), 0.25, 0.2);
+	Out.ar(0, sig);
+}).add;
+)
+
+// Start synth sound
+~synth = Synth(\saw);
+
+
+// control the synth with the sensor
+(
+~control = Routine.new({
+	{
+		~synth.set(\cutoff, ~val.linexp(0,1023,80,4000));
+		0.01.wait;
+	}.loop
+}).play
+)
+
+(
+~control.stop;
+~synth.free;
+)
