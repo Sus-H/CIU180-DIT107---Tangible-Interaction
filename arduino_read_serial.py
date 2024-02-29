@@ -42,7 +42,7 @@ for p in ports:
 list_of_instr = ["Piano Merlin",
                  "Shamisen",
                  "Banjo",
-                 "Piano Merlin",
+                 "Choir Aahs",
                  "ocarina",
                  "bandoneon",
                  "dulcimer",
@@ -52,8 +52,8 @@ list_of_instr = ["Piano Merlin",
                  "Distortion Guitar",
                  "acoustic bass"]
 
-list_of_drums = ["Marimba",
-                 "Xylophone"]
+list_of_drums = ["Choir Aahs",
+                 "Wood Block"]
 
 
 # Create a new "Music session" use run as server to suppress the error messages
