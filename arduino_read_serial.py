@@ -29,13 +29,14 @@ def play_drums(drum_picked, drum_pitch) -> None:
 # Automatically get the correct port
 ports = list(serial.tools.list_ports.comports())
 for p in ports:
-    # print(p.name)
-    # print(p.description)
-
-    if "Serial Device" or "Arduino" in p.description:
-        print("This is an Arduino!")
-        port = p.name
-        print(port)
+    print(p.name)
+    print(p.description)
+    port = "COM5"
+    # break
+    # if "Serial Device" or "Arduino" in p.description:
+    #     print("This is an Arduino!")
+    #     port = p.name
+    #     print(port)
 
 
 list_of_instr = ["Piano Merlin",
@@ -52,8 +53,7 @@ list_of_instr = ["Piano Merlin",
                  "acoustic bass"]
 
 list_of_drums = ["Marimba",
-                 "Xylophone",
-                 "Reverse Cymbal"]
+                 "Xylophone"]
 
 
 # Create a new "Music session" use run as server to suppress the error messages
@@ -77,7 +77,7 @@ actual_drums = drum_session.instruments[0:-1:2]
 # ///////////////////////// TEST BLOCK /////////////////////////////// #
 TESTING = False
 
-tones_midi = [60, 62, 64, 65, 67, 69, 71, 72]
+tones_midi = [55, 57, 50, 60, 62, 64, 65, 67, 69, 71, 72, 74, 76, 77, 79]
 if TESTING is True:
     for picked_instr in actual_instruments:
         for tone in tones_midi:
@@ -90,9 +90,11 @@ if TESTING is True:
 # ///////////////////////// MAIN /////////////////////////////// #
 # Use function to get information from arduinos serial port.
 if TESTING is not True:
+
     ser = read_serial(port, 9600)
     main_session = Session.run_as_server(self=main_session)
     drum_session = Session.run_as_server(self=drum_session)
+
     while True:
         data = ser.readline().decode().strip()
         # data = "this is incoming data"
@@ -108,28 +110,35 @@ if TESTING is not True:
             #                                      randint(1, 1)]
             print(data_converted)
 
-            play_tone = data_converted[0]
+            # print(abs(data_converted[0]))
+            if abs(data_converted[0]) < 15:
+                play_tone = tones_midi[abs(data_converted[0])]
             volume = data_converted[1]/100
+
+            # print(volume)
             instr = actual_instruments[data_converted[2]]
-            print(list_of_instr[data_converted[2]])
-            durations = data_converted[3]
-            print(durations/64)
+            # print(list_of_instr[data_converted[2]])
+            if data_converted[3] != 0:
+                durations = 1/data_converted[3]
+            else:
+                durations = 1
+            # print(durations/64)
             drum_picked = data_converted[4]
-            touchpad = data_converted[5]
+            drum_play = data_converted[5]
 
-            print([play_tone,
-                   volume,
-                   instr,
-                   durations,
-                   drum_picked,
-                   touchpad])
+            # print([play_tone,
+            #        volume,
+            #        data_converted[2],
+            #        durations,
+            #        drum_picked,
+            #        drum_play])
 
-            if not play_tone:
+            if abs(data_converted[0]) == 0:
                 volume = 0
             instr.play_note(pitch=play_tone,
                             volume=volume,
-                            length=durations/64)
+                            length=durations)
 
-            if touchpad:
+            if drum_play:
                 drum_session.fork(process_function=play_drums,
                                   args=[drum_picked, play_tone])            

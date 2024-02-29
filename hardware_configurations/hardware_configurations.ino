@@ -1,8 +1,3 @@
-/*
-  Use an ultrasensor to read distance.
-  Then depending on the distance, lighting a lamp and making a buzzer sound.
-*/
-// Tone library?
 #include <Arduino.h>
 #define TONE_USE_INT
 #define TONE_PITCH 440
@@ -20,7 +15,11 @@
 #define KNOB_1_PIN A1 // KNOB tiny pin
 #define KNOB_2_PIN A2 // KNOB tiny pin
 
+#define PRESSURE_4_PIN A4 // PRESSURE SENSOR pin
 #define SLIDER_5_PIN A5 // SLIDER pin
+
+//PRESSURE SENSOR
+int pressure_value = 0;
 
 // ULTRASENSOR pins
 const int echoPin = 10;
@@ -43,37 +42,38 @@ void setup() {
   pinMode(trigPin, INPUT);
 
   // TOUCHPAD
-  pinMode(TOUCH_PIN, INPUT);
+  // pinMode(TOUCH_PIN, INPUT);
 
   // LED
-  pinMode(LED_R_PIN, OUTPUT);
+  /* pinMode(LED_R_PIN, OUTPUT);
   pinMode(LED_B1_PIN, OUTPUT);
   pinMode(LED_W_PIN, OUTPUT);
-  pinMode(LED_B2_PIN, OUTPUT);
+  pinMode(LED_B2_PIN, OUTPUT); */
 
   Serial.begin(9600);
 }
 
 
 void loop() {
-  digitalWrite(LED_R_PIN, LOW); 
+  /* digitalWrite(LED_R_PIN, LOW); 
   digitalWrite(LED_B1_PIN, LOW); 
   digitalWrite(LED_W_PIN, LOW); 
-  digitalWrite(LED_B2_PIN, LOW); 
+  digitalWrite(LED_B2_PIN, LOW); */
   
   values[0] = play_tone();
   values[1] = volume();
   values[2] = instrument();
   values[3] = durations();
   values[4] = drum_sound();
-  values[5] = touchpad();
+  values[5] = pressure_sensor();
 
   for (int i = 0; i < 6; i++) {
     Serial.print(values[i]);
     Serial.print(" ");
   }
   Serial.println("");
-  delay(500);
+  delay(1000/durations());
+  
 }
 
 
@@ -92,10 +92,12 @@ int play_tone() {
   distance = (duration * .0343) / 2;
   
   // up to 35 cm
-  if (distance > 35) {
+  if (distance > 50) {
     return 0;
   }
-  return map(distance, 0, 35, 58, 68);
+  if (distance < 50) {
+    return map(distance, 0, 50, 0, 14);
+  }
 }
 
 // POTENTIOMETERS Values 0-1023
@@ -113,13 +115,40 @@ int instrument() {
 
 int durations() {
   knob_1_value = analogRead(KNOB_1_PIN);
-  return map(knob_1_value, 0, 1023, 1, 64);
+  
+  if (knob_1_value < 205) {
+    return 1;
+    }
+  
+  if (knob_1_value < 410) {
+    return 2;
+    }
+
+  if (knob_1_value < 615) {
+    return 2;
+    }
+
+  if (knob_1_value < 820) {
+    return 4;
+    }
+
+  if (knob_1_value < 1023) {
+    return 8;
+    }
+  else {
+    return 8;
+    }
 }
 
 
 int drum_sound() {
   knob_2_value = analogRead(KNOB_2_PIN);
-  return map(knob_2_value, 0, 1023, 0, 2);
+  return map(knob_2_value, 0, 1023, 0, 1);
+}
+
+int pressure_sensor() {
+  pressure_value = analogRead(PRESSURE_4_PIN);
+  return pressure_value;
 }
 
 
