@@ -52,7 +52,7 @@ list_of_instr = ["Piano Merlin",
                  "Distortion Guitar",
                  "acoustic bass"]
 
-list_of_drums = ["Choir Aahs",
+list_of_drums = ["Steel Drum",
                  "Wood Block"]
 
 
