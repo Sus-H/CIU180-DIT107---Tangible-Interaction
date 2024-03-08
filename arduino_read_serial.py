@@ -135,9 +135,10 @@ if TESTING is not True:
 
             if abs(data_converted[0]) == 0:
                 volume = 0
-            instr.play_note(pitch=play_tone,
-                            volume=volume,
-                            length=durations)
+            else:
+                instr.play_note(pitch=play_tone,
+                                volume=0.9,
+                                length=durations)
 
             if drum_play:
                 drum_session.fork(process_function=play_drums,
